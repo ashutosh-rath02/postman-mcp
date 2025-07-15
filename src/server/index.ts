@@ -1,5 +1,6 @@
 import { PostmanClient } from "../client/postmanClient";
 import dotenv from "dotenv";
+import { tools, getToolByName } from "../tools/definitions";
 
 dotenv.config();
 
@@ -7,7 +8,7 @@ const apiKey = process.env.POSTMAN_API_KEY;
 
 /**
  * Minimal server bootstrap
- * For now, just checks Postman API connectivity.
+ * Now lists available tools and calls 'listCollections' as a demo.
  */
 export async function startServer() {
   if (!apiKey) {
@@ -15,18 +16,22 @@ export async function startServer() {
     process.exit(1);
   }
   const client = new PostmanClient(apiKey);
-  try {
-    // Try fetching the user's collections as a connectivity test
-    const result = await client.get("/collections");
-    const count = Array.isArray((result as any)?.collections)
-      ? (result as any).collections.length
-      : 0;
-    console.log(
-      "Successfully connected to Postman API. Collection count:",
-      count
-    );
-  } catch (err) {
-    console.error("Failed to connect to Postman API:", err);
-    process.exit(1);
+
+  // List available tools
+  console.log("Available tools:");
+  for (const tool of tools) {
+    console.log(`- ${tool.name}: ${tool.description}`);
+  }
+
+  // Demo: Call 'listCollections' tool
+  const tool = getToolByName("listCollections");
+  if (tool) {
+    try {
+      const validatedInput = tool.schema.parse({});
+      const result = await tool.handler(client, validatedInput);
+      console.log("\nResult of listCollections:", result);
+    } catch (err) {
+      console.error("Error running tool:", err);
+    }
   }
 }
