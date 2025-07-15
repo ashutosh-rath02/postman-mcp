@@ -1,21 +1,17 @@
-import { z } from "zod";
-import { ToolDefinition } from "../types/tool";
-import { PostmanClient } from "../client/postmanClient";
+import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { zodToMCPInputSchema } from "../utils/schema-converter.js";
+import { workspaceTools } from "./workspaceTools";
+import { collectionTools } from "./collectionTools";
+import { environmentTools } from "./environmentTools";
 
-// Example tool: List Collections
-export const listCollections: ToolDefinition = {
-  name: "listCollections",
-  description: "List all Postman collections for the user.",
-  schema: z.object({}), // No input required
-  async handler(client: PostmanClient) {
-    return client.get("/collections");
-  },
-};
+const allTools = [...workspaceTools, ...collectionTools, ...environmentTools];
 
-// Tool registry
-export const tools: ToolDefinition[] = [listCollections];
+export const tools: Tool[] = allTools.map((def) => ({
+  name: def.name,
+  description: def.description,
+  inputSchema: zodToMCPInputSchema(def.schema),
+}));
 
-// Helper to get tool by name
-export function getToolByName(name: string) {
-  return tools.find((t) => t.name === name);
-}
+export const toolHandlers = Object.fromEntries(
+  allTools.map((def) => [def.name, def])
+);
