@@ -1,16 +1,18 @@
 {
   "name": "postman-mcp",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "A Model Context Protocol (MCP) server for Postman, by Ashutosh Rath.",
+  "author": "Ashutosh Rath <your.email@example.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashutosh-rath-au3/postman-mcp"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "typescript": "^5.8.3"
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "bin": {
+    "postman-mcp": "./dist/mcp/index.js"
   }
 }
